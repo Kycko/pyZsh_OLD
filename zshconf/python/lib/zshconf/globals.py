@@ -6,16 +6,17 @@ from   shutil  import which
 from   sys     import exit as SYSEXIT
 import zshconf.varFuncs    as VF
 
-############## алиасы и экспорты
-# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
-exports = {'EDITOR'  :'nano',
-           'VISUAL'  :'nano', # важный аналог переменной EDITOR
-           'HISTSIZE':'6505',
-           'SAVEHIST':'6505',
-           # ↓ здесь {HOME}, чтобы корректно работало у root'а
-           'HISTFILE':'${HOME}/.zshHistory',
-           # ↓ чтобы работало удаление в корзину в VS Code
-           'ELECTRON_TRASH':'kioclient'}
+############## горячие клавиши
+hotkeys = {
+  'up'           :{'code':'^[[A'   ,'action':'up-line-or-beginning-search'},
+  'down'         :{'code':'^[[B'   ,'action':'down-line-or-beginning-search'},
+  'delete'       :{'code':'^[[3~'  ,'action':'delete-char'},
+  'ctrlRight'    :{'code':'^[[1;5C','action':'forward-word'},
+  'ctrlLeft'     :{'code':'^[[1;5D','action':'backward-word'},
+  'ctrlBackspace':{'code':'^H'     ,'action':'backward-kill-word'},
+  # ↓ чтобы срабатывало даже если в строке что-то введено
+  'ctrlD'        :{'code':'^D'     ,'action':'exit_zsh'}
+  }
 
 ############## файлы
 files = {
@@ -54,6 +55,17 @@ colors = {
     }
   }
 
+############## алиасы и экспорты
+# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
+exports = {'EDITOR'  :'nano',
+           'VISUAL'  :'nano', # важный аналог переменной EDITOR
+           'HISTSIZE':'6505',
+           'SAVEHIST':'6505',
+           # ↓ здесь {HOME}, чтобы корректно работало у root'а
+           'HISTFILE':'${HOME}/.zshHistory',
+           # ↓ чтобы работало удаление в корзину в VS Code
+           'ELECTRON_TRASH':'kioclient'}
+
 ############# программы
 # если программа не найдена, which выдаёт None
 sysBins = {bin:which(bin) for bin in ['dircolors','tmux']}
@@ -62,6 +74,7 @@ sysBins = {bin:which(bin) for bin in ['dircolors','tmux']}
 isRoot = getuid() == 0
 
 distro = VF.getDistro(files['distro'])  # 'arch'/'7'/'8'
+isArch = distro == 'arch'
 
 guiterm,inTmux = VF.checkGUI()
 # если вдруг уровень оболочки не задан, задаём 1
