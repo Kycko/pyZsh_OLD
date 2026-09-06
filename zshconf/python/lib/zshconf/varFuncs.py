@@ -4,6 +4,8 @@ from   os  import environ
 from   sys import exit   as SYSEXIT
 import zshconf.readWrite as RW
 
+def sudo(isRoot:bool): return '' if isRoot else 'sudo '
+
 # цвета
 def fColor(colr:str,bold=False):
   # преобразует цвет в f-строку (вида %B%F{yellow})

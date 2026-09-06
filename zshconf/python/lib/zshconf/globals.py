@@ -7,7 +7,6 @@ from   sys     import exit as SYSEXIT
 import zshconf.varFuncs    as VF
 
 
-################################### static
 ########### каталоги
 # home
 dirs = {'home':Path('/home/kycko')}
@@ -51,17 +50,6 @@ hotkeys = {
   'ctrlD'        :{'code':'^D'     ,'action':'exit_zsh'}
   }
 
-########### алиасы и экспорты
-# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
-exports = {'EDITOR'  :'nano',
-           'VISUAL'  :'nano', # важный аналог переменной EDITOR
-           'HISTSIZE':'6505',
-           'SAVEHIST':'6505',
-           # ↓ здесь {HOME}, чтобы корректно работало у root'а
-           'HISTFILE':'${HOME}/.zshHistory',
-           # ↓ чтобы работало удаление в корзину в VS Code
-           'ELECTRON_TRASH':'kioclient'}
-
 ########### цвета
 colors = {
   'prompt':{
@@ -98,10 +86,11 @@ colors = {
 
 ########### программы
 # если программа не найдена, which выдаёт None
-sysBins = {bin:which(bin) for bin in ['dircolors','tmux']}
+sysBins = {}
+for bin in ['dircolors','git','python3','tmux']:
+  sysBins[bin] = which(bin)
 
 
-################################### dynamic
 ########### проверка окружения
 isRoot = getuid() == 0
 
@@ -122,6 +111,41 @@ except: sources_toLoad = []
 
 ############# прочее
 termSymbols = '╭╰>' if guiterm else '┌└>'
+
+########### алиасы и экспорты
+aliases = {
+  ####### git
+  'gs'  :f"{sysBins['git']} status",
+  # в gd='git diff' не работает автодополнение
+  'gdh' : 'git diff HEAD',  # в моём git есть разбивка по guiterm
+  'gl'  :f"{sysBins['git']} log",
+  'ga'  :f"{sysBins['git']} add --all && {sysBins['git']} status",
+  'gc'  :f"{sysBins['git']} commit -m",
+  ####### прочее
+  'clr' :'clear && fastfetch',
+  'diff':'diff --color=auto',
+  'grep':'grep -i --color=auto',
+  'less':'less_wrapper',
+  'ls'  :'ls -lah --color=auto',
+  'ping':'ping -c 3',
+  'py'  : sysBins['python3'],
+  'rg'  :'rg -i',
+  'sctl':'systemctl'
+  }
+
+for al in ['mount','umount','visudo']: aliases[al] = VF.sudo(isRoot) + al
+if not isArch: aliases['cdBuildCloud'] = f"cd {dirs['work']['cloud']}"
+
+# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
+exports = {'EDITOR'        :'nano',
+           'VISUAL'        :'nano', # важный аналог переменной EDITOR
+           'HISTSIZE'      :'6505',
+           'SAVEHIST'      :'6505',
+           # ↓ здесь {HOME}, чтобы корректно работало у root'а
+           'HISTFILE'      :'${HOME}/.zshHistory',
+           # ↓ чтобы работало удаление в корзину в VS Code
+           'ELECTRON_TRASH':'kioclient',
+           '_pzIsArch'     :str(isArch)}  # нужно для подмены less
 
 
 # защита от запуска модуля

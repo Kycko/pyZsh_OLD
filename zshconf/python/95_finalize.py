@@ -7,6 +7,7 @@ def _export(db:dict,key:str):
   for var,value in db.items(): print(f'{key} {var}="{value}"')
 
 _export(G.exports,'export')
+_export(G.aliases,'alias')
 
 # clear в TTY обновляет цвета всего экрана
 # в guiterm этого не делаем, чтобы не сбрасывать экран при подключении по SSH
