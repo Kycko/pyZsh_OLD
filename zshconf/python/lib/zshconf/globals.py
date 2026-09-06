@@ -6,19 +6,28 @@ from   shutil  import which
 from   sys     import exit as SYSEXIT
 import zshconf.varFuncs    as VF
 
-############## горячие клавиши
-hotkeys = {
-  'up'           :{'code':'^[[A'   ,'action':'up-line-or-beginning-search'},
-  'down'         :{'code':'^[[B'   ,'action':'down-line-or-beginning-search'},
-  'delete'       :{'code':'^[[3~'  ,'action':'delete-char'},
-  'ctrlRight'    :{'code':'^[[1;5C','action':'forward-word'},
-  'ctrlLeft'     :{'code':'^[[1;5D','action':'backward-word'},
-  'ctrlBackspace':{'code':'^H'     ,'action':'backward-kill-word'},
-  # ↓ чтобы срабатывало даже если в строке что-то введено
-  'ctrlD'        :{'code':'^D'     ,'action':'exit_zsh'}
+
+################################### static
+########### каталоги
+# home
+dirs = {'home':Path('/home/kycko')}
+# репозитории
+dirs['repos'] = {'local':{'root':dirs['home']/'data/repos'}}
+# рабочие
+dirs['work'] = {'cloud':dirs['home']/'data/cloud/build'}
+# промпт
+dirs['prompt'] = {  # замены путей в промпте
+  str(dirs['repos']['local']['root']):{
+    'distro':['arch','red'],
+    'subst' : 'data/repos'
+    },
+  str(dirs['work']['cloud'])         :{
+    'distro':['red'],
+    'subst' : 'work'
+    }
   }
 
-############## файлы
+########### файлы
 files = {
   'distro' :Path('/etc/os-release'),
   'plugins':{
@@ -30,8 +39,40 @@ files = {
     }
   }
 
-############## цвета
+########### горячие клавиши
+hotkeys = {
+  'up'           :{'code':'^[[A'   ,'action':'up-line-or-beginning-search'},
+  'down'         :{'code':'^[[B'   ,'action':'down-line-or-beginning-search'},
+  'delete'       :{'code':'^[[3~'  ,'action':'delete-char'},
+  'ctrlRight'    :{'code':'^[[1;5C','action':'forward-word'},
+  'ctrlLeft'     :{'code':'^[[1;5D','action':'backward-word'},
+  'ctrlBackspace':{'code':'^H'     ,'action':'backward-kill-word'},
+  # ↓ чтобы срабатывало даже если в строке что-то введено
+  'ctrlD'        :{'code':'^D'     ,'action':'exit_zsh'}
+  }
+
+########### алиасы и экспорты
+# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
+exports = {'EDITOR'  :'nano',
+           'VISUAL'  :'nano', # важный аналог переменной EDITOR
+           'HISTSIZE':'6505',
+           'SAVEHIST':'6505',
+           # ↓ здесь {HOME}, чтобы корректно работало у root'а
+           'HISTFILE':'${HOME}/.zshHistory',
+           # ↓ чтобы работало удаление в корзину в VS Code
+           'ELECTRON_TRASH':'kioclient'}
+
+########### цвета
 colors = {
+  'prompt':{
+    'lines'    :{
+      'local'  :{'user' :VF.fColor('yellow',True),
+                 'root' :VF.fColor('red'   ,True)},
+      'ssh'    :{'user' :VF.fColor('cyan'  ,True),
+                 'root' :VF.fColor('red'   ,True)}
+      },
+    'dirPrefix':VF.fColor('yellow',False)
+    },
   'TTY'   :{
     # 0 = цвет фона
     '0':'0b0c0f',  # grey  (orig name: black)
@@ -55,34 +96,33 @@ colors = {
     }
   }
 
-############## алиасы и экспорты
-# экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
-exports = {'EDITOR'  :'nano',
-           'VISUAL'  :'nano', # важный аналог переменной EDITOR
-           'HISTSIZE':'6505',
-           'SAVEHIST':'6505',
-           # ↓ здесь {HOME}, чтобы корректно работало у root'а
-           'HISTFILE':'${HOME}/.zshHistory',
-           # ↓ чтобы работало удаление в корзину в VS Code
-           'ELECTRON_TRASH':'kioclient'}
-
-############# программы
+########### программы
 # если программа не найдена, which выдаёт None
 sysBins = {bin:which(bin) for bin in ['dircolors','tmux']}
 
-############# проверка окружения
+
+################################### dynamic
+########### проверка окружения
 isRoot = getuid() == 0
 
-distro = VF.getDistro(files['distro'])  # 'arch'/'7'/'8'
-isArch = distro == 'arch'
+distro   = VF.getDistro(files['distro'])  # 'arch'/'7'/'8'
+isArch   = distro == 'arch'
+distType = ['red','arch'][isArch]
 
 guiterm,inTmux = VF.checkGUI()
 # если вдруг уровень оболочки не задан, задаём 1
 firstShell = int(environ.get('SHLVL',1)) == 1
 
-############# модули/плагины
+sshDistro = VF.checkSSH()
+inSSH     = sshDistro is not None
+
+########### модули/плагины
 try   : sources_toLoad = files['plugins'][distro]
 except: sources_toLoad = []
+
+############# прочее
+termSymbols = '╭╰>' if guiterm else '┌└>'
+
 
 # защита от запуска модуля
 if __name__ == '__main__':

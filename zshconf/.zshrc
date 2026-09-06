@@ -2,7 +2,7 @@
 dir="${${(%):-%x}:A:h}"
 
 # запускаем zsh-часть
-# for zFile in "${dir}"/zsh/*.zsh ; do source ${zFile} ; done
+for zFile in "${dir}"/zsh/*.zsh ; do source ${zFile} ; done
 # запускаем python-часть
 eval "$(python3 "${dir}/init.py")"
 

@@ -4,6 +4,14 @@ from   os  import environ
 from   sys import exit   as SYSEXIT
 import zshconf.readWrite as RW
 
+# цвета
+def fColor(colr:str,bold=False):
+  # преобразует цвет в f-строку (вида %B%F{yellow})
+  final  = '%B' if bold else '%b'
+  final += '%F{' + colr + '}'
+  return final
+
+# проверка окружения
 def getDistro(file):  # file = объект Path
   def _errExit(file):
     RW.confError(f'файл {file} не найден или недоступен')
@@ -22,6 +30,9 @@ def checkGUI ():
   inTmux  = environ.get('TMUX') is not None
   guiterm = term != 'linux' and not inTmux
   return guiterm,inTmux
+def checkSSH ():
+  res = environ.get('SSH_CONNECTION')
+  if res: return res.split()[2].split('.')[-1]
 
 # защита от запуска модуля
 if __name__ == '__main__':
