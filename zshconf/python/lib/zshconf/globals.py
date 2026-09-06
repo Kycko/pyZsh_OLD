@@ -1,16 +1,10 @@
 # глобальные переменные, влияющие на настройку zsh
 
-from   os     import getuid,environ
-from   shutil import which
-from   sys    import exit as SYSEXIT
-import zshconf.varFuncs   as VF
-
-############# проверка окружения
-isRoot = getuid() == 0
-
-guiterm,inTmux = VF.checkGUI()
-# если вдруг уровень оболочки не задан, задаём 1
-firstShell = int(environ.get('SHLVL',1)) == 1
+from   os      import getuid,environ
+from   pathlib import Path
+from   shutil  import which
+from   sys     import exit as SYSEXIT
+import zshconf.varFuncs    as VF
 
 ############## алиасы и экспорты
 # экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
@@ -22,6 +16,18 @@ exports = {'EDITOR'  :'nano',
            'HISTFILE':'${HOME}/.zshHistory',
            # ↓ чтобы работало удаление в корзину в VS Code
            'ELECTRON_TRASH':'kioclient'}
+
+############## файлы
+files = {
+  'distro' :Path('/etc/os-release'),
+  'plugins':{
+    'arch' :[
+      Path('/usr/share/doc/pkgfile/command-not-found.zsh'),
+      Path('/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh')
+      ],
+    '8'    :[Path('/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh')]
+    }
+  }
 
 ############## цвета
 colors = {
@@ -51,6 +57,19 @@ colors = {
 ############# программы
 # если программа не найдена, which выдаёт None
 sysBins = {bin:which(bin) for bin in ['dircolors','tmux']}
+
+############# проверка окружения
+isRoot = getuid() == 0
+
+distro = VF.getDistro(files['distro'])  # 'arch'/'7'/'8'
+
+guiterm,inTmux = VF.checkGUI()
+# если вдруг уровень оболочки не задан, задаём 1
+firstShell = int(environ.get('SHLVL',1)) == 1
+
+############# модули/плагины
+try   : sources_toLoad = files['plugins'][distro]
+except: sources_toLoad = []
 
 # защита от запуска модуля
 if __name__ == '__main__':
