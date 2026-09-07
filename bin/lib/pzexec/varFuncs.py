@@ -2,6 +2,7 @@
 
 from   copy import deepcopy
 from   sys  import exit as SYSEXIT
+import pzexec.globals   as G
 import pzexec.runFuncs  as RF
 
 def getTask(args:list, db:dict):

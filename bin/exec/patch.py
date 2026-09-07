@@ -30,7 +30,7 @@ class Globals():  # глобальные (для этого скрипта) пе
     newpatch = G.files['newPatch']
 
     curDir     = SF.color('текущему'   ,'udl')
-    patchName  = SF.color(newpatch.name,'grn')
+    patchName  = SF.color(newpatch.name,'cya',True)
     printedDir = workdir.replace('/home/kycko','~')
     printedDir = SF.color(printedDir,'ylw')
     created    = SF.color('создан'  ,'grn',True)
