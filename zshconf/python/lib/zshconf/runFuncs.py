@@ -1,9 +1,9 @@
 # функции запуска программ
 
-from   sys import exit  as SYSEXIT
-import subprocess       as spr
-import zshconf.globals  as G
-import zshconf.varFuncs as VF
+from   sys import exit   as SYSEXIT
+import subprocess        as spr
+import zshconf.globals   as G
+import zshconf.initFuncs as IF
 
 def run(cmd,args=''):
   # cmd может быть списком[] либо строкой
@@ -17,7 +17,7 @@ def run(cmd,args=''):
   # 't' нужен ТОЛЬКО для возврата вывода (например, для записи в переменную)
   # по умолчанию, при args='', вывод будет направлен, как обычно, в терминал
   def _sudo  (shell:bool):
-    final = VF.sudo(G.isRoot)
+    final = IF.sudo(G.isRoot)
     if   shell: return final
     elif final: return [final.strip()]
     else      : return []

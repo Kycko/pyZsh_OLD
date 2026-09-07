@@ -4,7 +4,7 @@ from   os      import getuid,environ
 from   pathlib import Path
 from   shutil  import which
 from   sys     import exit as SYSEXIT
-import zshconf.varFuncs    as VF
+import zshconf.initFuncs   as IF
 
 
 ########### каталоги
@@ -57,12 +57,12 @@ hotkeys = {
 colors = {
   'prompt':{
     'lines'    :{
-      'local'  :{'user' :VF.fColor('yellow',True),
-                 'root' :VF.fColor('red'   ,True)},
-      'ssh'    :{'user' :VF.fColor('cyan'  ,True),
-                 'root' :VF.fColor('red'   ,True)}
+      'local'  :{'user' :IF.fColor('yellow',True),
+                 'root' :IF.fColor('red'   ,True)},
+      'ssh'    :{'user' :IF.fColor('cyan'  ,True),
+                 'root' :IF.fColor('red'   ,True)}
       },
-    'dirPrefix':VF.fColor('yellow',False)
+    'dirPrefix':IF.fColor('yellow',False)
     },
   'TTY'   :{
     # 0 = цвет фона
@@ -97,18 +97,18 @@ for bin in ['dircolors','git','python3','tmux']:
 ########### проверка окружения
 isRoot = getuid() == 0
 
-distro   = VF.getDistro(files['distro'])  # 'arch'/'7'/'8'
+distro   = IF.getDistro(files['distro'])  # 'arch'/'7'/'8'
 isArch   = distro == 'arch'
 distType = ['red','arch'][isArch]
 
-guiterm,inTmux = VF.checkGUI()
+guiterm,inTmux = IF.checkGUI()
 # если вдруг уровень оболочки не задан, задаём 1
 firstShell = int(environ.get('SHLVL',1)) == 1
 
-sshDistro = VF.checkSSH()
+sshDistro = IF.checkSSH()
 inSSH     = sshDistro is not None
 
-onBTRFS = VF.checkBTRFS()
+onBTRFS = IF.checkBTRFS()
 
 ########### модули/плагины
 try   : sources_toLoad = files['plugins'][distro]
@@ -138,10 +138,10 @@ aliases = {
   'sctl':'systemctl'
   }
 
-for al in ['mount','umount','visudo']: aliases[al] = VF.sudo(isRoot) + al
+for al in ['mount','umount','visudo']: aliases[al] = IF.sudo(isRoot) + al
 if not isArch: aliases['cdBuildCloud'] = f"cd {dirs['work']['cloud']}"
 
-myBins = VF.binAlias(dirs['repos']['pyZsh']['exec'],
+myBins = IF.binAlias(dirs['repos']['pyZsh']['exec'],
                      onBTRFS,
                      distType,
                      sysBins['python3'],
