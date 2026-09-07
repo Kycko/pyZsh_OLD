@@ -12,6 +12,8 @@ import zshconf.varFuncs    as VF
 dirs = {'home':Path('/home/kycko')}
 # репозитории
 dirs['repos'] = {'local':{'root':dirs['home']/'data/repos'}}
+dirs['repos']['pyZsh'] = {'root' :dirs['repos']['local']['root']/'pyZsh'}
+dirs['repos']['pyZsh']['exec']  = dirs['repos']['pyZsh']['root']/'bin/exec'
 # рабочие
 dirs['work'] = {'cloud':dirs['home']/'data/cloud/build'}
 # промпт
@@ -29,6 +31,7 @@ dirs['prompt'] = {  # замены путей в промпте
 ########### файлы
 files = {
   'distro' :Path('/etc/os-release'),
+  'binInit':dirs['repos']['pyZsh']['exec'].parent / 'init.py',
   'plugins':{
     'arch' :[
       Path('/usr/share/doc/pkgfile/command-not-found.zsh'),
@@ -105,6 +108,8 @@ firstShell = int(environ.get('SHLVL',1)) == 1
 sshDistro = VF.checkSSH()
 inSSH     = sshDistro is not None
 
+onBTRFS = VF.checkBTRFS()
+
 ########### модули/плагины
 try   : sources_toLoad = files['plugins'][distro]
 except: sources_toLoad = []
@@ -135,6 +140,13 @@ aliases = {
 
 for al in ['mount','umount','visudo']: aliases[al] = VF.sudo(isRoot) + al
 if not isArch: aliases['cdBuildCloud'] = f"cd {dirs['work']['cloud']}"
+
+myBins = VF.binAlias(dirs['repos']['pyZsh']['exec'],
+                     onBTRFS,
+                     distType,
+                     sysBins['python3'],
+                     files['binInit'],
+                     aliases) # aliases обновляется внутри
 
 # экспорты = то что в .zshrc прописывается как 'export EDITOR=nano'
 exports = {'EDITOR'        :'nano',
