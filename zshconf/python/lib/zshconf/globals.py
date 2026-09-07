@@ -10,6 +10,7 @@ import zshconf.initFuncs   as IF
 ########### каталоги
 # home
 dirs = {'home':Path('/home/kycko')}
+# КЕШ ЗАДАН НИЖЕ, ЕМУ НУЖНА ПЕРЕМЕННАЯ distro!
 # репозитории
 dirs['repos'] = {'local':{'root':dirs['home']/'data/repos'}}
 dirs['repos']['pyZsh'] = {'root' :dirs['repos']['local']['root']/'pyZsh'}
@@ -32,6 +33,7 @@ dirs['prompt'] = {  # замены путей в промпте
 files = {
   'distro' :Path('/etc/os-release'),
   'binInit':dirs['repos']['pyZsh']['exec'].parent / 'init.py',
+  'ssh'    :{'hosts':dirs['home']/'.ssh/known_hosts'},
   'plugins':{
     'arch' :[
       Path('/usr/share/doc/pkgfile/command-not-found.zsh'),
@@ -40,6 +42,12 @@ files = {
     '8'    :[Path('/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh')]
     }
   }
+
+########### программы
+# если программа не найдена, which выдаёт None
+sysBins = {}
+for bin in ['dircolors','git','python3','tmux']:
+  sysBins[bin] = which(bin)
 
 ########### горячие клавиши
 hotkeys = {
@@ -87,12 +95,6 @@ colors = {
     }
   }
 
-########### программы
-# если программа не найдена, which выдаёт None
-sysBins = {}
-for bin in ['dircolors','git','python3','tmux']:
-  sysBins[bin] = which(bin)
-
 
 ########### проверка окружения
 isRoot = getuid() == 0
@@ -108,14 +110,14 @@ firstShell = int(environ.get('SHLVL',1)) == 1
 sshDistro = IF.checkSSH()
 inSSH     = sshDistro is not None
 
+# такой вот способ проверки, что я в виртуалке
+inVirt = not files['ssh']['hosts'].is_file()
+
 onBTRFS = IF.checkBTRFS()
 
 ########### модули/плагины
 try   : sources_toLoad = files['plugins'][distro]
 except: sources_toLoad = []
-
-############# прочее
-termSymbols = '╭╰>' if guiterm else '┌└>'
 
 ########### алиасы и экспорты
 aliases = {
@@ -158,6 +160,19 @@ exports = {'EDITOR'        :'nano',
            # ↓ чтобы работало удаление в корзину в VS Code
            'ELECTRON_TRASH':'kioclient',
            '_pzIsArch'     :str(isArch)}  # нужно для подмены less
+
+############# кеш
+dirs['cache'] = {'root':dirs['home']/'data/cache'}
+dirs['cache']['dnf'] = dirs['cache']['root']/'dnf'/f'RO{distro}'
+
+# хотел перенести pkglist в pzexec.globals, но там проблема чтения dirs['cache']
+files['cache'] = {'pkglist':dirs['cache']['dnf'] /'packages.txt',
+                  # в таком формате updTime удобнее для кода
+                  'updTime':{'dnf'  :dirs['cache']['dnf'] /'updTime.txt',
+                             'pyZsh':dirs['cache']['root']/'pyZsh.txt'}}
+
+############# прочее
+termSymbols = '╭╰>' if guiterm else '┌└>'
 
 
 # защита от запуска модуля
