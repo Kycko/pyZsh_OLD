@@ -1,6 +1,7 @@
 # общие функции обработки списков
 
-from   sys import exit    as SYSEXIT
+from   copy import deepcopy
+from   sys  import exit   as SYSEXIT
 import pzexec.stringFuncs as SF
 
 # фильтры
@@ -24,6 +25,10 @@ def getMaxLen(list:list,rmColors=True):
 # преобразование
 def cutColors(list:list):
   return [SF.cutColors(item) for item in list]
+def rmBlanks (list:list):
+  wcopy = deepcopy(list)
+  while '' in wcopy: wcopy.remove('')
+  return wcopy
 
 # защита от запуска модуля
 if __name__ == '__main__':
