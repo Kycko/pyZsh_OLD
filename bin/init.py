@@ -16,9 +16,9 @@ for lib in [cur/'lib',conflib]:
   lib = str(lib)
   # добавляем библиотеки в PATH
   if lib not in sys.path: sys.path.insert(0,lib)
-import zshconf.readWrite as RW
+import zshconf.fileFuncs as FF
 import zshconf.globals   as G
 
 ############ запускаем (импортом) нужный скрипт
-mod = RW.importModule(G.dirs['repos']['pyZsh']['exec']/args.pop(0))
+mod = FF.importModule(G.dirs['repos']['pyZsh']['exec']/args.pop(0))
 mod.Help(mod.main,mod.SG.tasks,args,debug=False)

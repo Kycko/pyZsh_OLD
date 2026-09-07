@@ -5,8 +5,12 @@ from zshconf.globals import *
 
 ############## каталоги
 # рабочие
-dirs['work']['local'] = {'root':dirs['home']/'data/build'}
+dirs['work'].update({
+  'local' :{'root':dirs['home']/'data/build'},
+  'rbuild':{'root':dirs['home']/'rpmbuild'}
+  })
 dirs['work']['local']['patches'] = dirs['work']['local']['root']/'patches'
+dirs['work']['rbuild']['specs']  = dirs['work']['rbuild']['root']/'SPECS'
 # BTRFS
 dirs['snaps'] = {'cur'   :Path('/mnt/@root'),
                  'broken':Path('/mnt/@root.broken'),
@@ -15,6 +19,10 @@ dirs['snaps'] = {'cur'   :Path('/mnt/@root'),
 
 ############## файлы
 files.update({
+  'mail'    :{
+    'arch'  :dirs['home']/'data/cloud/myFiles/comp/sysconfig/linux/mail.txt',
+    'red'   :dirs['home']/'data/cloud/sysconfig/mail.txt'
+    },
   'mounts'  :Path('/proc/mounts'),
   'newPatch':dirs['work']['local']['patches']/'name.patch'
   })

@@ -1,7 +1,9 @@
 # функции чтения, записи и импорта библиотек
 
-from sys import exit as SYSEXIT
-from zshconf.readWrite import *
+from   sys import exit as SYSEXIT
+import pzexec.globals  as G
+import pzexec.strings  as S
+from   zshconf.fileFuncs import *
 
 def write_toFile(lines,file:str,justAdd=False):
   # если justAdd=True, предыдущие данные останутся в файле
@@ -12,6 +14,13 @@ def write_toFile(lines,file:str,justAdd=False):
     # один f.writelines() работает быстрее,
     # чем множество f.write() внутри цикла
     f.writelines(f'{line}\n' for line in lines)
+def getSpec     ():
+  # возвращает путь к spec-файлу  из ~/rpmbuild/SPECS
+  dir   = G.dirs['work']['rbuild']['specs']
+  final = list(dir.glob('*.spec'))
+  # возвращает ТОЛЬКО если нашли РОВНО один spec-файл
+  if len(final) == 1: return final[0]
+  else              : print(S.oneSpec)
 
 # защита от запуска модуля
 if __name__ == '__main__':

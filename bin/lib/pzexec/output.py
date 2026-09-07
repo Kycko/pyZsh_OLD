@@ -2,9 +2,9 @@
 
 from   sys import exit    as SYSEXIT
 import pzexec.globals     as G
+import pzexec.strings     as S
 import pzexec.listFuncs   as LF
 import pzexec.stringFuncs as SF
-import pzexec.strings     as S
 
 # шаблон, реализация try-except
 class Help():

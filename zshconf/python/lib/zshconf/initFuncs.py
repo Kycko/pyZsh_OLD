@@ -3,7 +3,7 @@
 from   copy import deepcopy
 from   os   import environ,statvfs
 from   sys  import exit  as SYSEXIT
-import zshconf.readWrite as RW
+import zshconf.fileFuncs as FF
 
 def sudo(isRoot:bool): return '' if isRoot else 'sudo '
 
@@ -17,9 +17,9 @@ def fColor(colr:str,bold=False):
 # проверка окружения
 def getDistro (file): # file = объект Path
   def _errExit(file):
-    RW.confError(f'файл {file} не найден или недоступен')
+    FF.confError(f'файл {file} не найден или недоступен')
   try:
-    for line in RW.readFile(file):
+    for line in FF.readFile(file):
       if 'Arch Linux' in line: return 'arch'
       else:
         res = line.split('VERSION_ID="')
@@ -46,7 +46,7 @@ def binAlias(dir,onBTRFS:bool,distType:str,py3:str,initfile,aliases:dict):
   # dir и initfile = объекты Path
   db = {}
   for f in dir.glob('*.py'):  # это фильтр по f.suffix
-    props    = RW.importModule(f).SG.dist
+    props    = FF.importModule(f).SG.dist
     chkBTRFS = onBTRFS or 'btrfs' not in props['dist']
     if distType in props['dist'] and chkBTRFS:
       # импорт ins.py перезаписывает значения скрипта rem.py

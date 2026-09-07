@@ -2,8 +2,8 @@
 
 from   datetime import datetime,timedelta
 from   sys      import exit as SYSEXIT
+import zshconf.fileFuncs    as FF
 import zshconf.globals      as G
-import zshconf.readWrite    as RW
 
 def _export  (db:dict,key:str):
   for var,value in db.items(): print(f'{key} {var}="{value}"')
@@ -16,7 +16,7 @@ def _updCache(timeout:int,task:str):
     # ↓ не выдаёт ошибок, даже если нет родительских каталогов
     try:
       file   = G.files['cache']['updTime'][task]
-      parsed = RW.readFile(file)[0].strip().split()
+      parsed = FF.readFile(file)[0].strip().split()
       pTime  = parsed.pop(0)
 
       if parsed: fresh = parsed.pop(0) == 'True'

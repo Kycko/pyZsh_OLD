@@ -2,10 +2,10 @@ import os
 from   sys      import exit as SYSEXIT
 from   datetime import datetime
 from   time     import time
+import pzexec.fileFuncs     as FF
 import pzexec.globals       as G
 import pzexec.listFuncs     as LF
 import pzexec.output        as O
-import pzexec.readWrite     as RW
 import pzexec.runFuncs      as RF
 import pzexec.stringFuncs   as SF
 import pzexec.strings       as S
@@ -38,7 +38,7 @@ def fork (args:list):
 def write(file,status:bool=None): # file = объект Path
   final = str(int(time()))
   if status is not None: final += f' {status}'
-  RW.write_toFile(final,file)
+  FF.write_toFile(final,file)
 def dnf  ():
   import pzexec.packages as PKG
   rootdir = str(G.dirs['cache']['dnf'])
@@ -48,8 +48,8 @@ def dnf  ():
   base = PKG.DNF()  # "прогреваем" кеш DNF
   if base.dbLoaded:
     # получаем только уникальные имена доступных пакетов
-    pkgs = set(pkg.name for pkg in base.getAll('r'))
-    RW.write_toFile(sorted(pkgs),cFiles['pkglist'])
+    pkgs = set(pkg.name for pkg in base.query({'b':'r'}))
+    FF.write_toFile(sorted(pkgs),cFiles['pkglist'])
     # записываем текущий timestamp
     write(cFiles['updTime']['dnf'])
 def pyZsh():  # проверяет наличие обновлений моего pyZsh
@@ -74,7 +74,7 @@ def status(args:str): # args[0] = 'status'
     if manual and not file.is_file():  # запустили проверку статуса вручную
       return S.noFile.lower()
     else:
-      try   : data = RW.readFile(file)[0].strip().split()
+      try   : data = FF.readFile(file)[0].strip().split()
       except: return SF.color("обновите данные ('clear')",'red',True)
 
       diff = datetime.now() - datetime.fromtimestamp(int(data.pop(0)))

@@ -4,7 +4,7 @@ import pzexec.output      as O
 import pzexec.runFuncs    as RF
 import pzexec.stringFuncs as SF
 import pzexec.strings     as S
-import zshconf.readWrite  as RW
+import zshconf.fileFuncs  as FF
 
 # основные функции
 # определяем здесь, чтобы использовать в Globals()
@@ -20,7 +20,7 @@ def main   (args:list):
 def restore(args:list):
   def _findRoot():
     # находит корень и выдаёт '/dev/nvme0n1p3'
-    for line in RW.readFile(G.files['mounts']):
+    for line in FF.readFile(G.files['mounts']):
       parts = line.split()
       if len(parts) > 1 and parts[1] == '/': return parts[0]
   def _print(dirs:dict,snapnum:str):

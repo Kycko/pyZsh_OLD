@@ -14,8 +14,8 @@ for lib in [py/'lib',binlib]:
   lib = str(lib)
   # добавляем библиотеки в PATH
   if lib not in sysPath: sysPath.insert(0,lib)
+import zshconf.fileFuncs as FF
 import zshconf.globals   as G
-import zshconf.readWrite as RW
 
 ############ создаём списки с абсолютными путями
 pre  = [] # ПЕРЕД tmux запускаем 00-09
@@ -28,9 +28,9 @@ post.sort()
 
 ############## запуск
 # это запускаем в любом случае
-for file in pre: RW.importModule(file)
+for file in pre: FF.importModule(file)
 
 tmuxBin = G.sysBins['tmux']
 if G.guiterm or G.inTmux or not tmuxBin:
-  for file in post: RW.importModule(file)
+  for file in post: FF.importModule(file)
 else: print(f'exec {tmuxBin} -u') # запускаем tmux
