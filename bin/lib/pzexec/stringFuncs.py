@@ -34,6 +34,9 @@ def color       (string:str,colr:str,bold=False):
 def findToColor (string:str,sub :str,colr:str,bold=False):
   # подсвечивает все найденные sub
   return color(sub,colr,bold).join(string.split(sub))
+def hlFirst     (string:str,colr:str,bold=False):
+  # подсвечивает первую букву в string
+  return color(string[0],colr,bold=bold) + string[1:]
 def cutColors   (string:str): # вырезает из строки все цвета
   # можно использовать для правильного подсчёта длины строки
   for color in G.colors['term'].values():

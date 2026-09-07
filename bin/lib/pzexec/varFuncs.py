@@ -1,9 +1,21 @@
 # разные глобальные функции, не подходящие для других модулей
 
-from sys import exit as SYSEXIT
+from   copy import deepcopy
+from   sys  import exit as SYSEXIT
+import pzexec.runFuncs  as RF
 
-# прочие мелкие
-def getIB(type:str,index:int):  # IB = index/boolean
+def getTask(args:list, db:dict):
+  # понадобится не во всех скриптах
+  if args:
+    args = deepcopy(args)
+    cur  = db
+    try:
+      # сперва проверяем, только потом удаляем pop'ом
+      while args: cur = cur[G.tk + args[0]]; args.pop(0)
+    except: pass
+    return cur,args
+  else: RF.raiseError()
+def getIB  (type:str,index:int):  # IB = index/boolean
   # служебная функция; возвращает сам index либо true/false
   return index if type == 'index' else index >= 0
 

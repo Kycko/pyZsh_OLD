@@ -1,16 +1,24 @@
 # глобальные переменные для скриптов из bin/exec
 
-from sys import exit as SYSEXIT
+from shutil import which
+from sys    import exit as SYSEXIT
 from zshconf.globals import *
 
 ############## каталоги
+# рабочие
+dirs['work']['local'] = {'root':dirs['home']/'data/build'}
+dirs['work']['local']['patches'] = dirs['work']['local']['root']/'patches'
+# BTRFS
 dirs['snaps'] = {'cur'   :Path('/mnt/@root'),
                  'broken':Path('/mnt/@root.broken'),
                  # здесь надо подставлять номер, поэтому без Path
                  'from'  :'/mnt/@snaps/$num$/snapshot'}
 
 ############## файлы
-files['mounts'] = Path('/proc/mounts')
+files.update({
+  'mounts'  :Path('/proc/mounts'),
+  'newPatch':dirs['work']['local']['patches']/'name.patch'
+  })
 
 ############## оформление вывода
 colors['term'] = {'blk':'\033[30m', # black
@@ -24,6 +32,9 @@ colors['term'] = {'blk':'\033[30m', # black
                   'udl':'\033[4m',  # underline
                   'bld':'\033[1m',  # bold
                   'rst':'\033[0m'}  # reset all colors
+
+########### программы
+sysBins['patch'] = which('patch')
 
 ############## прочее
 zshFlag = '--zsh-data'
