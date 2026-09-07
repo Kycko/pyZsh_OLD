@@ -1,7 +1,6 @@
 # глобальные переменные для скриптов из bin/exec
 
-from shutil import which
-from sys    import exit as SYSEXIT
+from sys import exit as SYSEXIT
 from zshconf.globals import *
 
 ############## каталоги
@@ -34,7 +33,7 @@ colors['term'] = {'blk':'\033[30m', # black
                   'rst':'\033[0m'}  # reset all colors
 
 ########### программы
-sysBins['patch'] = which('patch')
+for bin in ['btrfs','patch']: sysBins[bin] = which(bin)
 
 ############## прочее
 zshFlag = '--zsh-data'
